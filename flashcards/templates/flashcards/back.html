@@ -1,0 +1,43 @@
+{% load static %}
+{% load flashcards_tags %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+<title>Anki</title></head>
+<body>
+
+{{ object.group }}
+{{ object.question |pureword |safe}}
+{{ object.answer |safe}}
+{{ object.example |safe}}
+{{ object.translation |safe}}
+{{ object.extra |safe}}
+
+{#音频按钮#}
+
+<audio autoplay id="audio" src={{object.question|pureword|youdao}}>
+Your browser does not support the audio element.
+</audio>
+<br>
+<button id="control" onclick="play()">play</button><br>
+
+<a href="{% url "flashcards:next" %}">Next</a>
+<a href="{% url "flashcards:recite" object.id 1%}">EASY</a>
+<a href="{% url "flashcards:recite" object.id 2%}">MID</a>
+<a href="{% url "flashcards:recite" object.id 3%}">DIFF</a>
+<a href="{% url "flashcards:recite" object.id 4%}">SUPDIF</a>
+<script>
+    //音频按钮触发的函数
+    const audio = document.getElementById("audio");
+    function play(){
+        audio.play();
+    }
+    // 不需要，在audio中加入autoplay即可
+    //页面加载完成的时候自动播放
+{#    window.onload=function (){#}
+{#        audio.play();#}
+
+</script>
+</body>
+</html>

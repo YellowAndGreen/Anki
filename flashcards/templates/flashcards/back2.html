@@ -1,0 +1,124 @@
+{% load static %}
+{% load flashcards_tags %}
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 的 CSS 文件 -->
+    <link href="{% static "bootstrap.css" %}" rel="stylesheet">
+
+    <title>Anki</title>
+    <link rel="shortcut icon" href="{%static '/img/favicon.ico' %}" />
+    <style>
+        .word.accordion-button::after{
+            display: none;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- 导航栏 -->
+    <header class="p-3 border-bottom">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+          <img src="{% static '/img/fuyou.png' %}" class="img-fluid" height="60px" width="60px" alt="fail to load">
+        </a>
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link "  href="#">Anki</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#" aria-current="page">Recite</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">Login</a>
+          </li>
+        </ul>
+        <form class="d-flex align-items-center  mb-2 mb-lg-0 float-end" >
+        <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+        </form>
+        </div>
+
+      </div>
+
+  </header>
+    <!-- 卡片正面 -->
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingZero">
+      <button class="accordion-button collapsed word" type="button" data-bs-toggle="collapse" aria-expanded="false">
+        {{ object.group }}
+      </button>
+    </h2>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed "  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne" onclick="play()">
+        {{ object.question |pureword |safe}}
+      </button>
+
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne">
+      <div class="accordion-body">{{ object.answer |safe}}</div>
+    </div>
+  </div>
+  <div class="accordion-item" id="example">
+    <h2 class="accordion-header" id="flush-headingTwo">
+      <button id="example_button" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+          <div>{{ object.example |safe}}</div>
+      </button>
+    </h2>
+    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" >
+      <div class="accordion-body">{{ object.translation |safe}}</div>
+    </div>
+  </div>
+  <div class="accordion-item" id="extra">
+    <h2 class="accordion-header" id="flush-headingThree">
+      <button  class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="true" aria-controls="flush-collapseThree">
+        EXTRA
+      </button>
+    </h2>
+    <div id="flush-collapseThree" class="accordion-collapse  open" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+      <div id="extra_button" class="accordion-body">{{ object.extra |safe}}</div>
+    </div>
+  </div>
+</div>
+    <!-- 难易选项 -->
+    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+        <button type="button" class="btn btn-danger" onClick="location.href='{% url "flashcards:recite" object.id 4%}'">FORGET</button>
+        <button type="button" class="btn btn-warning" onClick="location.href='{% url "flashcards:recite" object.id 3%}'">DIFF</button>
+        <button type="button" class="btn btn-info" onClick="location.href='{% url "flashcards:recite" object.id 2%}'">MID</button>
+        <button type="button" class="btn btn-success" onClick="location.href='{% url "flashcards:recite" object.id 1%}'">EASY</button>
+    </div>
+    <!-- 音频 -->
+    <audio autoplay id="audio" src={{object.question|pureword|youdao}}>ERROR</audio>
+    <!-- bootstrap-js -->
+    <script src="{% static "bootstrap.js" %}"></script>
+    <!-- 音频按钮函数 -->
+    <script>
+        const audio = document.getElementById("audio");
+        function play(){audio.play();}
+
+    </script>
+
+    <script>
+    //处理例句和扩展为空
+    var example=document.getElementById("example");
+    var extra=document.getElementById("extra");
+
+    if(document.getElementById("example_button").innerText===""){
+        example.style.display="none";
+    }
+    if(document.getElementById("extra_button").innerText===""){
+        extra.style.display="none";
+    }
+    //去除单词一行的箭头
+
+    </script>
+  </body>
+</html>

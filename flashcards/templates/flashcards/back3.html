@@ -1,0 +1,155 @@
+{% extends "flashcards/base.html" %}
+{% load static %}
+{% load flashcards_tags %}
+{% block title %}Anki Card{% endblock %}
+
+{% block head %}
+    <style>
+    .link{
+        text-decoration: none;
+        font-weight: bold;
+        }
+    .word.accordion-button::after{
+    display: none;}
+    #footer{
+    position: fixed;
+    bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    }
+    </style>
+{% endblock %}
+{% block Recite %} active{% endblock %}
+{% block navbar %}
+    <!--添加编辑栏-->
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="Edit" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Card
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="Edit">
+          <li><a class="dropdown-item" href="{% url 'flashcards:word_add_tags' object.id 'marked' 0 %}">Mark!</a></li>
+        <li><a class="dropdown-item" href="#">Edit</a></li>
+        <li><a class="dropdown-item" href="#">Remove</a></li>
+        <li><a class="dropdown-item" href="#">Append</a></li>
+          <li><a class="dropdown-item" href="#">Add Tag</a></li>
+      </ul>
+    </li>
+
+{% endblock %}
+{% block content %}
+        {% if messages %}
+    <div class="mt-1">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        {{ message|safe }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button></div>
+    {% endfor %}
+    </div>
+    {% endif %}
+        <!-- 卡片正面 -->
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingZero">
+      <button class="accordion-button collapsed word" type="button" data-bs-toggle="collapse" aria-expanded="false">
+        {{ object.group }}
+        <div class="float-right">
+                                {% for tag in tags %}
+              <span class="badge rounded-pill bg-primary position-relative ">{{ tag }}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" onClick="location.href='{% url 'flashcards:word_delete_tags' object.id tag 0%}'">
+    X
+  </span></span>
+          {% endfor %}
+        </div>
+      </button>
+    </h2>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed "  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne" onclick="play()">
+          <a class="link" href='{% url 'flashcards:dict' %}?query={{ object.question |pureword |safe}}'>{{ object.question |pureword |safe}}</a>
+      </button>
+
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne">
+      <div class="accordion-body">{{ object.answer |safe}}</div>
+    </div>
+  </div>
+  <div class="accordion-item" id="example">
+    <h2 class="accordion-header" id="flush-headingTwo">
+      <button id="example_button" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+          <div>{{ object.example |safe}}</div>
+      </button>
+    </h2>
+    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" >
+      <div class="accordion-body">{{ object.translation |safe}}</div>
+    </div>
+  </div>
+  <div class="accordion-item" id="extra">
+    <h2 class="accordion-header" id="flush-headingThree">
+      <button  class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="true" aria-controls="flush-collapseThree">
+        EXTRA
+      </button>
+    </h2>
+    <div id="flush-collapseThree" class="accordion-collapse  open" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+      <div id="extra_button" class="accordion-body">{{ object.extra |safe}}</div>
+    </div>
+  </div>
+</div>
+
+    <!-- 音频 -->
+    <audio autoplay id="audio" src={{object.question|pureword|youdao}}>ERROR</audio>
+{% endblock %}
+
+{% block footer %}
+    <!-- 难易选项 -->
+    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+        <button type="button" class="btn btn-secondary" onClick=undo()>UNDO</button>
+        <button type="button" class="btn btn-danger" onClick="location.href='{% url "flashcards:recite" object.id 4%}'">FORGET</button>
+        <button type="button" class="btn btn-warning" onClick="location.href='{% url "flashcards:recite" object.id 3%}'">DIFF</button>
+        <button type="button" class="btn btn-info" onClick="location.href='{% url "flashcards:recite" object.id 2%}'">MID</button>
+        <button type="button" class="btn btn-success" onClick="location.href='{% url "flashcards:recite" object.id 1%}'">EASY</button>
+    </div>
+{% endblock %}
+
+{% block script %}
+    //处理例句和扩展为空
+    var example=document.getElementById("example");
+    var extra=document.getElementById("extra");
+
+    if(document.getElementById("example_button").innerText===""){
+        example.style.display="none";
+    }
+    if(document.getElementById("extra_button").innerText===""){
+        extra.style.display="none";
+    }
+    //音频
+    const audio = document.getElementById("audio");
+    function play(){audio.play();}
+
+    //将本次卡片id存入session
+    var id = JSON.parse(window.localStorage.getItem("id"));
+    //若id不存在则初始化
+    if(id==null){
+        id=[];
+    }
+    id.push({{ object.id }});
+    //长度不超过10
+    if(id.length==11){
+        id.push({{ object.id }});
+        id.shift();
+    }
+    window.localStorage.setItem("id",JSON.stringify(id));
+    //回退按钮点击事件
+
+    function undo(){
+        to = window.location.href.split('flashcards')[0]+'flashcards/undo/'+id[id.length-2];
+        // 删除此次和上次的id，上次的id会自动加上
+        id.pop();
+        id.pop();
+        window.localStorage.setItem("id",JSON.stringify(id));
+        location.href=to;
+    }
+{% endblock %}
+

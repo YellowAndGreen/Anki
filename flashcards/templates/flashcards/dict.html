@@ -1,0 +1,41 @@
+{% extends "flashcards/base.html" %}
+{% load static %}
+{% load flashcards_tags %}
+{% block title %}{{ searchvalue }}{% endblock %}
+{% block head %}
+    <style>
+    #id_query{
+        margin-top: 2%;
+    }
+    </style>
+{% endblock %}
+{% block Dict %} active{% endblock %}
+{% block content %}
+<div>
+<form  class="align-items-center col-6 " method="get">
+
+{{ form.as_p }}
+
+{% csrf_token %}
+
+</form>
+
+</div>
+    <div class="container-fluid">
+    {{ html_result|safe }}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    var query_text = document.getElementsByTagName("label");
+    var p = document.getElementsByTagName("p");
+    query_text[0].remove()
+    var input = document.getElementById('id_query');
+    //设定为bootstrap的样式
+    input.setAttribute('class','form-control');
+    //input.setAttribute('id','searchInput');
+    input.setAttribute('placeholder','word');
+    p[0].setAttribute('class','form-floating mb-3');
+    p[0].insertAdjacentHTML('beforeend', '<label for="id_query">QueryWord</label>');
+{% endblock %}
