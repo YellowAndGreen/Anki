@@ -21,4 +21,7 @@ urlpatterns = [
     path('recite_wordlist/<int:wordlist_id>/<int:progress>/<int:rank>/', recite_wordlist, name='recite_wordlist'),
     path('word_add_tags/<int:word_id>/<slug:tag>/<int:section>/', word_add_tags, name='word_add_tags'),
     path('word_delete_tags/<int:word_id>/<slug:tag>/<int:section>/', word_delete_tags, name='word_delete_tags'),
+    path('word_edit/<int:word_id>/<int:section>/', word_edit, name='word_edit'),
+    path('word_add/', word_add, name='word_add'),
+    path('word_delete/<int:word_id>/', word_delete, name='word_delete'),
 ]

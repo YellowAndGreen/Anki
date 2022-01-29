@@ -169,14 +169,28 @@ def dict_search(request):
     form = SearchForm(request.GET)
     if form.is_valid():
         cd = form.cleaned_data
+        # # 获取词汇排名
+        # # 加载mdx文件
+        # filename = "flashcards/static/dict/COCA/COCA Frequency 60000.mdx"
+        # headwords = [*MDX(filename)]  # 单词名列表
+        # items = [*MDX(filename).items()]  # 释义html源码列表
+        #
+        # # 查词，返回单词和html文件
+        #
+        # queryWord = cd['query']
+        #
+        # # print(headwords[120:123])
+        # html_result = ''
+        # try:
+        #     wordIndex = headwords.index(queryWord.encode())
+        #     word, html = items[wordIndex]
+        #     word, html_head = word.decode(), html.decode()
+        # except ValueError:
+        #     html_result = 'No Results!'
         # 加载mdx文件
-        filename = "flashcards/static/dict/剑桥高阶.mdx"
+        filename = "flashcards/static/dict/牛津/牛津高阶8简体.mdx"
         headwords = [*MDX(filename)]  # 单词名列表
         items = [*MDX(filename).items()]  # 释义html源码列表
-        # if len(headwords) == len(items):
-        #     print(f'加载成功：共{len(headwords)}条')
-        # else:
-        #     print(f'【ERROR】加载失败{len(headwords)}，{len(items)}')
 
         # 查词，返回单词和html文件
 
@@ -195,7 +209,9 @@ def dict_search(request):
         html_result = ''
 
     return render(request, 'flashcards/dict.html',
-                  {'html_result': html_result, 'form': form, 'searchvalue': cd['query']})
+                  {'html_result': html_result, 'form': form, 'searchvalue': cd['query'],
+                   },
+                  )
 
 
 @login_required
@@ -316,3 +332,48 @@ def word_delete_tags(request, word_id, tag, section):
     else:
         return redirect('flashcards:recite_wordlist', wordlist_id=section,
                         progress=get_object_or_404(WordList, id=section).progress, rank=0)
+
+
+@login_required
+def word_edit(request, word_id, section):
+    word = get_object_or_404(Card, id=word_id)
+    cd = request.POST
+    word.group = cd['group']
+    word.question = cd['question']
+    word.answer = cd['answer']
+    word.example = cd['example']
+    word.translation = cd['translation']
+    word.extra = cd['extra']
+    word.tags.add(cd['tag'])
+    word.save()
+    messages.success(request, '词汇编辑成功！')
+    if section == 0:
+        return redirect('flashcards:card_detail', card_id=word_id)
+    else:
+        return redirect('flashcards:recite_wordlist', wordlist_id=section,
+                        progress=get_object_or_404(WordList, id=section).progress, rank=0)
+
+
+@login_required
+def word_add(request):
+    if request.POST:
+        word = Card()
+        cd = request.POST
+        word.group = cd['group']
+        word.question = cd['question']
+        word.answer = cd['answer']
+        word.example = cd['example']
+        word.translation = cd['translation']
+        word.extra = cd['extra']
+        word.tags.add(cd['tag'])
+        word.save()
+        messages.success(request, '词汇添加成功！')
+        return redirect('flashcards:word_add')
+    else:
+        return render(request, 'flashcards/card_create.html')
+
+
+@login_required
+def word_delete(request, word_id):
+    get_object_or_404(Card, id=word_id).delete()
+    return redirect('flashcards:next')

@@ -5,7 +5,7 @@ from taggit.managers import TaggableManager
 
 
 class Card(models.Model):
-    cid = models.PositiveIntegerField(db_index=True, unique=True)
+    cid = models.PositiveIntegerField(unique=True, null=True)
     group = models.CharField(max_length=20)
     question = models.CharField(max_length=200, default="none", blank=False)
     answer = models.CharField(max_length=200, default="none", blank=False)

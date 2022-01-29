@@ -1,4 +1,5 @@
 from django import forms
+from .models import Card
 
 
 class SearchForm(forms.Form):
@@ -12,3 +13,9 @@ class LoginForm(forms.Form):
 
 class CreateForm(forms.Form):
     query2 = forms.CharField()
+
+
+class CardForm(forms.ModelForm):
+    class Meta:
+        Model = Card
+        fields = ['group', 'question', 'answer', 'example', 'translation', 'extra']

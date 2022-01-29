@@ -14,15 +14,15 @@
   </head>
   <body>
     <!-- 导航栏 -->
-    <header class="p-2 border-bottom">
+    <header class="p-2 border-bottom m-0">
     <div class="container-fluid">
       <div class="p-0 d-flex flex-wrap align-items-center">
-        <a href="{% url "flashcards:dashboard" %}" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+        <a href="{% url "flashcards:dashboard" %}" class="d-flex align-items-center mb-0 mb-lg-0 text-dark text-decoration-none">
           <img src="{% static '/img/fuyou.png' %}" class="img-fluid" height="50px" width="50px" alt="fail to load">
         </a>
 
         <ul class="nav nav-tabs">
-          <li class="nav-item">
+          <li class="nav-item" id="Anki">
             <a class="p-2 nav-link {% block Anki %}{% endblock %}"  href="{% url "flashcards:dashboard" %}" >Anki</a>
           </li>
           <li class="nav-item ">

@@ -3,9 +3,14 @@
 {% load flashcards_tags %}
 {% block title %}{{ searchvalue }}{% endblock %}
 {% block head %}
+    <link href="{% static "dict/牛津/牛津高阶8简体.css" %}" rel="stylesheet">
+
     <style>
     #id_query{
         margin-top: 2%;
+    }
+    a.fayin{
+        display: none;
     }
     </style>
 {% endblock %}
@@ -22,6 +27,7 @@
 
 </div>
     <div class="container-fluid">
+
     {{ html_result|safe }}
     </div>
 

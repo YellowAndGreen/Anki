@@ -16,7 +16,7 @@ def youdao(text):
 def pureword(text):
     # 如果有sound标签则进行处理，否则不处理（仅用safe来处理html标签）
     voc1 = re.search('sound', text)
-    if type(voc1) == re.Match:  # 只有在匹配有结果的时候才将结果放入voc_list
+    if voc1:  # 只有在匹配有结果的时候才将结果放入voc_list
         voc2list = re.split("\<\!\-\-anki\-\-\>|;|\<b\>|\<div\>|\[sound\:|\</b\>|&nbsp|\(|\)", text)
         for voc2 in voc2list:
             if voc2 != "" and voc2 != " ":
