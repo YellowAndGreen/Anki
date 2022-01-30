@@ -103,9 +103,6 @@
 
 <div class="row">
     <div class="col-lg-6 col-md-12 col-sm-12">
-        <div id="main" style="width: 100%;height:400px;" ></div>
-    </div>
-    <div class="col-lg-6 col-md-12 col-sm-12">
         <div id="main2" style="width: 100%;height:400px;" ></div>
     </div>
 </div>
@@ -117,55 +114,7 @@
 {% block script %}
 
 // 图表
-//分类占比
-var app = {};
-var chartDom = document.getElementById('main');
-var myChart = echarts.init(chartDom);
-var option;
 
-option = {
-  title: {
-    text: 'Type',
-    left:'center',
-    textStyle: {
-      color: '#235894'
-    }
-  },
-  tooltip: {
-    trigger: 'item',
-    formatter: '{b} : {c} ({d}%)'
-  },
-  legend: {
-    left: 'center',
-    top: 'bottom',
-    data: [
-      '词汇',
-      '辨析',
-      '短语',
-    ]
-  },
-
-  series: [
-
-    {
-      name: 'Area Mode',
-      type: 'pie',
-      radius: [20, 140],
-      roseType: 'area',
-      itemStyle: {
-        borderRadius: 5
-      },
-      data: [
-        { value: {{ type_proportion.cihui }}, name: '词汇' },
-        { value: {{ type_proportion.bianxi }}, name: '辨析' },
-        { value: {{ type_proportion.duanyu }}, name: '短语' },
-
-      ]
-    }
-  ]
-};
-
-option && myChart.setOption(option);
 
 var chartDom = document.getElementById('main2');
 var myChart = echarts.init(chartDom);
@@ -174,7 +123,7 @@ var type = {"1":'Easy',"2":'Mid',"3":'Diff',"4":'Forget'};
 option = {
     title: {
     left:'center',
-    text: 'Recite',
+    text: 'ReciteData',
     textStyle: {
       color: '#235894'
     }

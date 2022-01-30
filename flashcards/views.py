@@ -80,14 +80,20 @@ def search(request):
     form = SearchForm(request.GET)
     if form.is_valid():
         cd = form.cleaned_data
-        cards = Card.objects.filter(
-            Q(question__icontains=cd['query']) | Q(example__icontains=cd['query']))
+        if cd['query'][0:2] == 'T:':
+            tag = get_object_or_404(Tag, slug=cd['query'][2:])
+            cards = Card.objects.filter(tags__in=[tag])
+        else:
+            cards = Card.objects.filter(
+                Q(question__icontains=cd['query']) | Q(example__icontains=cd['query']))
+            # 将搜索字段替换为红色
+            for card in cards:
+                card.question = card.question.replace(cd['query'], "<span id='red'><b>" + cd['query'] + "</b></span>")
+                card.example = card.example.replace(cd['query'], "<span id='red'><b>" + cd['query'] + "</b></span>")
+
     if cd['query'] == '':
         form = SearchForm()
-    # 将搜索字段替换为红色
-    for card in cards:
-        card.question = card.question.replace(cd['query'], "<span id='red'><b>" + cd['query'] + "</b></span>")
-        card.example = card.example.replace(cd['query'], "<span id='red'><b>" + cd['query'] + "</b></span>")
+
     return render(request, 'flashcards/search.html', {'cards': cards, 'searchvalue': cd['query'], 'form': form})
 
 
@@ -140,12 +146,15 @@ def undo(request, card_id):
 
 # 删除背诵记录
 @login_required
-def undo_list(request, card_id, list_id, progress):
-    # 需要撤回的卡片和需要删除背诵记录的卡是一张卡
+def undo_list(request, list_id, progress):
+    wordlist = get_object_or_404(WordList, id=list_id)
+    id_list = list(map(lambda dic: dic['id'], json.loads(wordlist.wordlist)))
+    card_id = id_list[progress - 1]
+    # 需要撤回到的卡片和需要删除背诵记录的卡是一张卡
     card = Card.objects.filter(id=card_id)
     card[0].recitedata.latest('date').delete()
     # 修改进度
-    return redirect('flashcards:recite_wordlist', list_id, progress, 0)
+    return redirect('flashcards:recite_wordlist', list_id, progress - 1, 0)
 
 
 # 网络搜索
@@ -282,6 +291,7 @@ def recite_wordlist(request, wordlist_id, progress, rank):
         # 更新进度
         wordlist.save()
     else:
+        wordlist.progress = progress
         percentage = int((wordlist.progress / wordlist.len_list) * 100)
 
     # 进度更新后判断是否完成单词列表，若完成，则返回主页
@@ -344,7 +354,8 @@ def word_edit(request, word_id, section):
     word.example = cd['example']
     word.translation = cd['translation']
     word.extra = cd['extra']
-    word.tags.add(cd['tag'])
+    if cd['tag'] != '':
+        word.tags.add(cd['tag'])
     word.save()
     messages.success(request, '词汇编辑成功！')
     if section == 0:
@@ -376,4 +387,5 @@ def word_add(request):
 @login_required
 def word_delete(request, word_id):
     get_object_or_404(Card, id=word_id).delete()
+    messages.success(request, '词汇删除成功！')
     return redirect('flashcards:next')

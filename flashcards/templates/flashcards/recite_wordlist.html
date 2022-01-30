@@ -157,7 +157,7 @@
 {% block footer %}
     <!-- 难易选项 -->
     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-        <button type="button" class="btn btn-secondary" onClick=undo()>UNDO</button>
+        <button type="button" class="btn btn-secondary" onClick="location.href='{% url "flashcards:undo_list" wordlist_id progress%}'">UNDO</button>
         <button type="button" class="btn btn-danger" onClick="location.href='{% url "flashcards:recite_wordlist" wordlist_id progress 4%}'">FORGET</button>
         <button type="button" class="btn btn-warning" onClick="location.href='{% url "flashcards:recite_wordlist" wordlist_id progress 3%}'">DIFF</button>
         <button type="button" class="btn btn-info" onClick="location.href='{% url "flashcards:recite_wordlist" wordlist_id progress 2%}'">MID</button>
@@ -181,31 +181,6 @@
     const audio = document.getElementById("audio");
     function play(){audio.play();}
 
-    //将本次卡片id存入session
-    var id = JSON.parse(window.localStorage.getItem("id"));
-    //若id不存在则初始化
-    if(id==null){
-        id=[];
-    }
-    id.push({{ object.id }});
-    //长度不超过10
-    if(id.length==11){
-        id.push({{ object.id }});
-        id.shift();
-    }
-    window.localStorage.setItem("id",JSON.stringify(id));
-    //回退按钮点击事件
 
-    function undo(){
-        //url中不能包含负号，progress-1当其为0时会发生错误
-        if({{ progress }}-1==0){progress=0;}
-        else progress={{ progress }}-1;
-        to = window.location.href.split('flashcards')[0]+'flashcards/undo_list/'+id[id.length-2]+'/{{ wordlist_id }}/'+String(progress);
-        // 删除此次和上次的id，上次的id会自动加上
-        id.pop();
-        id.pop();
-        window.localStorage.setItem("id",JSON.stringify(id));
-        location.href=to;
-    }
 {% endblock %}
 
