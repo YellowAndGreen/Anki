@@ -60,7 +60,7 @@
     <div class="form-floating mb-3">
 
       <select class="form-select" id="tagfloatingSelect" aria-label="Floating label select example" name="tag">
-        <option selected>请选择标签</option>
+
           {% for tag in tags %}
               <option value="{{ tag }}" name="{{ tag }}">{{ tag }}</option>
           {% endfor %}

@@ -11,6 +11,12 @@
     <link href="{% static "bootstrap.css" %}" rel="stylesheet">
     <link rel="shortcut icon" href="{%static '/img/favicon.ico' %}" />
     {% block head %}{% endblock %}
+    <style>
+        @font-face { font-family: _Gurmukhi MN; src: url('{% static '_Gurmukhi MN.ttc' %}'); }
+        body{
+            font-family: _Gurmukhi MN, serif;
+        }
+    </style>
   </head>
   <body>
     <!-- 导航栏 -->

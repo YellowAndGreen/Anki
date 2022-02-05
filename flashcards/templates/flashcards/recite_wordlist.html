@@ -92,6 +92,16 @@
   </div></div>
 {% endblock %}
 {% block content %}
+    {% if messages %}
+    <div class="mt-1">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        {{ message|safe }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button></div>
+    {% endfor %}
+    </div>
+    {% endif %}
     <!-- 进度条 -->
     <div class="progress">
     <div style="width: {{ percentage }}%" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow='{{ percentage }}' aria-valuemin="0" aria-valuemax="100">{{ percentage }}%</div>

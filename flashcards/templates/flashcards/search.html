@@ -33,7 +33,10 @@
    {% for card in cards %}
   <li class="list-group-item d-flex justify-content-between align-items-start">
     <div class="ms-2 me-auto" >
-        <div class="fw-bold"><a class='link' href="{% url 'flashcards:card_detail' card_id=card.id %}">{{ card.group }} - {{ card.question|pureword |safe}}</a></div>
+        <div class="fw-bold"><a class='link' href="{% url 'flashcards:card_detail' card_id=card.id %}">{{ card.group }} - {{ card.question|pureword |safe}}</a>
+        <span class="badge rounded-pill bg-danger" onClick="location.href='{% url 'flashcards:word_delete' card.id %}'">Delete</span>
+
+        </div>
       {{ card.example |safe}}
     </div>
 

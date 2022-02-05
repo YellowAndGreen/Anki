@@ -121,14 +121,15 @@ def index(request):
     rank_count_by_rank = []
     for i in range(0, 4):
         rank_count_by_rank.append([rank_day[i] for rank_day in rank_count_by_day])
-
+    # 仅返回有单词的tag
+    tags = filter(lambda tag: len(Card.objects.filter(tags__in=[tag])), Tag.objects.all())
     return render(request, 'flashcards/anki.html',
                   {'len': len(cards),
                    'type_proportion': type_proportion,
                    'lenlist': len(WordList.objects.all()),
                    'form': form,
                    'wordlists': wordlists,
-                   'tags': Tag.objects.all(),
+                   'tags': tags,
                    'recitedata': rank_count_by_rank, },
 
                   )
@@ -212,7 +213,13 @@ def dict_search(request):
             word, html = items[wordIndex]
             word, html_result = word.decode(), html.decode()
         except ValueError:
-            html_result = 'No Results!'
+            # 首字母大写的问题
+            try:
+                wordIndex = headwords.index(queryWord.lower().encode())
+                word, html = items[wordIndex]
+                word, html_result = word.decode(), html.decode()
+            except ValueError:
+                html_result = 'No Results!'
     else:
         form = SearchForm()
         html_result = ''
@@ -376,10 +383,11 @@ def word_add(request):
         word.example = cd['example']
         word.translation = cd['translation']
         word.extra = cd['extra']
-        word.tags.add(cd['tag'])
+        if cd['tag'] != '':
+            word.tags.add(cd['tag'])
         word.save()
         messages.success(request, '词汇添加成功！')
-        return redirect('flashcards:word_add')
+        return redirect('flashcards:dict')
     else:
         return render(request, 'flashcards/card_create.html')
 
